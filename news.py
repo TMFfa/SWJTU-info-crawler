@@ -85,7 +85,7 @@ class News:
             else:
                 cursor.execute(f'INSERT INTO {self.table} VALUES ("{src}", "{title}")')
                 self.conn.commit()
-                self.send(title, src)
+                self.send(f'【{self.table}】{title}', src)
         cursor.close()
 
     def loop(self):
