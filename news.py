@@ -103,8 +103,11 @@ class News:
             send_mail(self.config, title, src)
             return
         res = requests.get(src, headers=headers)
-        res.encoding = res.apparent_encoding
-        send_mail(self.config, title, res.text)
+        if src.endswith('.pdf'):
+            send_mail(self.config, title, src)
+        else:
+            res.encoding = res.apparent_encoding
+            send_mail(self.config, title, res.text)
 
     def __del__(self):
         self.conn.close()
