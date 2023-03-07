@@ -3,6 +3,7 @@ import requests
 import sqlite3
 import re
 import threading
+from datetime import datetime
 
 import smtplib
 from email.mime.text import MIMEText
@@ -92,8 +93,12 @@ class News:
         while True:
             try:
                 self.check()
+            except requests.ConnectionError as e:
+                print(f'【{datetime.now()}】{str(e)}')
+            except requests.HTTPError as e:
+                print(f'【{datetime.now()}】{str(e)}')
             except Exception as e:
-                print(e)
+                # print(e)
                 self.send(f'【ERROR】{self.table}', str(e))
             finally:
                 time.sleep(60)
