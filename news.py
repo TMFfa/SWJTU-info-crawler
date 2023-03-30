@@ -10,9 +10,6 @@ from email.mime.text import MIMEText
 
 from config import *
 
-headers = {
-    'User-Agent': 'Mozilla 5.0'
-}
 
 
 # 发送邮件
@@ -31,22 +28,28 @@ def send_mail(config, subject, text):
 
 
 class News:
-    def __init__(self, conn: sqlite3.Connection, config: dict, table: str, news_url: str, re_mode: str, parser=None):
+    def __init__(self, conn: sqlite3.Connection, 
+                 config: dict, table: str, news_url: str,
+                 re_mode: str, parser=None, 
+                 headers={'User-Agent': 'Mozilla 5.0'}):
         self.config = config
         self.news_url = news_url
+        self.headers = headers
+
         self.re_mode = re_mode
         if parser is not None:
             self.parser = parser
         else:
             self.parser = lambda x: x
+
         self.table = table
         self.conn = conn
         cursor = conn.cursor()
-        cursor.execute(f'SELECT COUNT(*) FROM sqlite_master WHERE type ="table" AND name = "{table}"')
+        cursor.execute(f'SELECT COUNT(*) FROM sqlite_master WHERE type ="table" AND name = "{self.table}"')
         result = cursor.fetchall()
         cursor.close()
         if result[0] == (0,):  # 没有为(0,)，有为(1,)
-            self.create_table(table)
+            self.create_table(self.table)
             self.init_news()
             self.show_table()
 
@@ -58,7 +61,7 @@ class News:
 
     def init_news(self):
         cursor = self.conn.cursor()
-        res = requests.get(self.news_url, headers=headers)
+        res = requests.get(self.news_url, headers=self.headers)
         res.encoding = res.apparent_encoding
         news = re.findall(self.re_mode, res.text)
         for src, title in news:
@@ -75,7 +78,7 @@ class News:
 
     def check(self):
         cursor = self.conn.cursor()
-        res = requests.get(self.news_url, headers=headers)
+        res = requests.get(self.news_url, headers=self.headers)
         res.encoding = res.apparent_encoding
         news = re.findall(self.re_mode, res.text)
         for src, title in news:
@@ -107,9 +110,9 @@ class News:
         if '【ERROR】' in title:
             send_mail(self.config, title, src)
             return
-        res = requests.get(src, headers=headers)
-        if src.endswith('.pdf'):
-            send_mail(self.config, title, src)
+        res = requests.get(src, headers=self.headers)
+        if res.url.endswith('.pdf'):
+            send_mail(self.config, title, res.url)
         else:
             res.encoding = res.apparent_encoding
             send_mail(self.config, title, res.text)
