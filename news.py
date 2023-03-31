@@ -106,7 +106,8 @@ class News:
             smtp.send_message(msg)
             # smtp.sendmail(mail, to, msg.as_string())  # 一样的，但明显上面更简单
 
-    def replace_url(self, res: requests.Response):
+    @staticmethod
+    def replace_url(res: requests.Response):
         text = res.text
 
         domain = parse.urlsplit(res.url)
@@ -118,7 +119,7 @@ class News:
             t = parse.urlsplit(url)
             if not t.netloc:
                 t = parse.urlunsplit((scheme, netloc, t.path, t.query, t.fragment))
-                text.replace(url, t)
+                text = text.replace(url, t)
             # else:
             #     t = parse.urlunsplit(t)
             # print(t)
