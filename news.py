@@ -110,15 +110,16 @@ class News:
     def replace_url(res: requests.Response):
         text = res.text
 
-        domain = parse.urlsplit(res.url)
-        scheme = domain.scheme
-        netloc = domain.netloc
+        # domain = parse.urlsplit(res.url)
+        # scheme = domain.scheme
+        # netloc = domain.netloc
 
         urls = re.findall('src="(.*?)"', res.text)
-        for url in urls:
+        for url in set(urls):  # set避免重复url导致的问题
             t = parse.urlsplit(url)
             if not t.netloc:
-                t = parse.urlunsplit((scheme, netloc, t.path, t.query, t.fragment))
+                # t = parse.urlunsplit((scheme, netloc, t.path, t.query, t.fragment))
+                t = parse.urljoin(res.url, url)
                 text = text.replace(url, t)
             # else:
             #     t = parse.urlunsplit(t)
