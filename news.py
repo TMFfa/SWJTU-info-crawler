@@ -72,9 +72,9 @@ class News:
             if len(cursor.fetchall()):
                 break
             else:
+                self.send(f'【{self.table}】{title}', src)
                 cursor.execute(f'INSERT INTO {self.table} VALUES ("{src}", "{title}")')
                 self.conn.commit()
-                self.send(f'【{self.table}】{title}', src)
         cursor.close()
 
     def loop(self):
@@ -130,7 +130,7 @@ class News:
         return self.replace_url(res)
     
     @staticmethod
-    def add_copy(self, title, url) -> str:
+    def add_copy(title, url) -> str:
         "因为一键复制按钮可能运行不了，故改为添加一个info信息自行复制"
         # "return copy button html code"
         # html = """
