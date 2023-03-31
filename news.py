@@ -4,6 +4,7 @@ import sqlite3
 import re
 import threading
 from datetime import datetime
+from urllib import parse
 
 import smtplib
 from email.mime.text import MIMEText
@@ -104,10 +105,27 @@ class News:
             smtp.login(config['from'], config['pwd'])
             smtp.send_message(msg)
             # smtp.sendmail(mail, to, msg.as_string())  # 一样的，但明显上面更简单
-    
-    def parse_text(self, text):
-        "to be rewrited"
+
+    def replace_url(self, res: requests.Response):
+        text = res.text
+
+        domain = parse.urlsplit(res.url)
+        scheme = domain.scheme
+        netloc = domain.netloc
+
+        urls = re.findall('src="(.*?)"', res.text)
+        for url in urls:
+            t = parse.urlsplit(url)
+            if not t.netloc:
+                t = parse.urlunsplit((scheme, netloc, t.path, t.query, t.fragment))
+                text.replace(url, t)
+            # else:
+            #     t = parse.urlunsplit(t)
+            # print(t)
         return text
+    
+    def parse_text(self, res: requests.Response):
+        return self.replace_url(res)
     
     def add_copy(self, title, url) -> str:
         "return copy button html code"
@@ -126,60 +144,102 @@ class News:
             self.send_mail(self.config, title, res.url+button_html)
         else:
             res.encoding = res.apparent_encoding
-            self.send_mail(self.config, title, self.parse_text(res.text)+button_html)
+            self.send_mail(self.config, title, self.parse_text(res)+button_html)
 
     def __del__(self):
         self.conn.close()
+
+# 考虑到网站转发信息跳到其它部门网站，无法统一处理，最多做模糊处理，因此只留下待覆写代码，留待以后完善。
+# 可考虑模糊匹配 content, article等。目前使用try进行一些处理
+
+class JWC(News):
+    # # 可以不初始化直接继承父类的__init__，不然要继承得加super()
+    # def __init__(self, conn: sqlite3.Connection, config: dict, table: str, news_url: str,
+    #              re_mode: str, parser=None, headers={ 'User-Agent': 'Mozilla 5.0' }):
+    #     super().__init__(conn, config, table, news_url, re_mode, parser, headers)
+
+    def parse_text(self, res: requests.Response):
+        text = self.replace_url(res)
+        try:
+            pass
+        except:
+            return text
+
+class XG(News):
+    # # 可以不初始化直接继承父类的__init__，不然要继承得加super()
+    # def __init__(self, conn: sqlite3.Connection, config: dict, table: str, news_url: str,
+    #              re_mode: str, parser=None, headers={ 'User-Agent': 'Mozilla 5.0' }):
+    #     super().__init__(conn, config, table, news_url, re_mode, parser, headers)
+
+    def parse_text(self, res: requests.Response):
+        text = self.replace_url(res)
+        try:
+            pass
+        except:
+            return text
+
+class PEC(News):
+    # # 可以不初始化直接继承父类的__init__，不然要继承得加super()
+    # def __init__(self, conn: sqlite3.Connection, config: dict, table: str, news_url: str,
+    #              re_mode: str, parser=None, headers={ 'User-Agent': 'Mozilla 5.0' }):
+    #     super().__init__(conn, config, table, news_url, re_mode, parser, headers)
+
+    def parse_text(self, res: requests.Response):
+        text = self.replace_url(res)
+        try:
+            pass
+        except:
+            return text
 
 
 if __name__ == '__main__':
     conn = sqlite3.connect('news.db', check_same_thread=False)
 
     jwc_parser = lambda src: src.replace('../', 'http://jwc.swjtu.edu.cn/')
-    jwc = News(conn, config, 'jwc', 'http://jwc.swjtu.edu.cn/vatuu/WebAction?setAction=newsList',
+    jwc = JWC(conn, config, 'jwc', 'http://jwc.swjtu.edu.cn/vatuu/WebAction?setAction=newsList',
                '<h3><a href="(.*?)" target="_blank">(.*?)</a></h3>', parser=jwc_parser)
-    # jwc.show_table()
-    # jwc.loop()
+    jwc.show_table()
+    jwc.loop()
 
 
-    xg_parser = lambda src: src.replace('/web/Home', 'http://xg.swjtu.edu.cn/web/Home')
-    xg = News(conn, config, 'xg', 'http://xg.swjtu.edu.cn/web/Home/PushNewsList?Lmk7LJw34Jmu=010j.shtml',
-              '<a href="(.*?)" title="(.*?)" target="_blank"', parser=xg_parser)
-    # xg.show_table()
-    # xg.loop()
+    # xg_parser = lambda src: src.replace('/web/Home', 'http://xg.swjtu.edu.cn/web/Home')
+    # xg = XG(conn, config, 'xg', 'http://xg.swjtu.edu.cn/web/Home/PushNewsList?Lmk7LJw34Jmu=010j.shtml',
+    #           '<a href="(.*?)" title="(.*?)" target="_blank"', parser=xg_parser)
+    # # xg.show_table()
+    # # xg.loop()
 
 
-    pec_parser = lambda src: src.replace('../', 'https://pec.swjtu.edu.cn/')
-    pec = News(conn, config, 'pec', 'https://pec.swjtu.edu.cn/yethan/WebAction?setAction=newsList&viewType=webdept_secondstyle&selectType=bigType&bigTypeId=75EDED8C6CAA7D73&newsType=all',
-               '<h3><a href="(.*?)" target="_blank">(.*?)</a></h3>', parser=pec_parser)
-    # pec.show_table()
-    # pec.loop()
+    # pec_parser = lambda src: src.replace('../', 'https://pec.swjtu.edu.cn/')
+    # pec = PEC(conn, config, 'pec', 'https://pec.swjtu.edu.cn/yethan/WebAction?setAction=newsList&viewType=webdept_secondstyle&selectType=bigType&bigTypeId=75EDED8C6CAA7D73&newsType=all',
+    #            '<h3><a href="(.*?)" target="_blank">(.*?)</a></h3>', parser=pec_parser)
+    # # pec.show_table()
+    # # pec.loop()
 
 
-    jwc_t = threading.Thread(name='jwc', target=jwc.loop)
-    xg_t = threading.Thread(name='xg', target=xg.loop)
-    pec_t = threading.Thread(name='pec', target=pec.loop)
+    # jwc_t = threading.Thread(name='jwc', target=jwc.loop)
+    # xg_t = threading.Thread(name='xg', target=xg.loop)
+    # pec_t = threading.Thread(name='pec', target=pec.loop)
 
-    threads = [jwc_t, xg_t, pec_t]
-    for thread in threads:
-        thread.daemon = True
-        thread.start()
+    # threads = [jwc_t, xg_t, pec_t]
+    # for thread in threads:
+    #     thread.daemon = True
+    #     thread.start()
     
-    # 控制程序退出，有这个就能检测Ctrl+C了
-    """
-    多线程并不能接受到发送给主线程的Ctrl+C，而主线程结束子线程并不会解锁
-    所以将子线程设置为守护线程，这样主线程结束守护线程也会解锁
-    故为了让主线程可以被控制，就要加个while 循环等待接收信号
-    （注释掉下面内容程序秒停）
-    """
-    # 可能是工程上的一般写法，要关注到子线程的存活
-    while True:
-        alive = True
-        for thread in threads:
-            alive = alive and thread.is_alive()
-        if not alive:
-            break
-
-    # 对该项目更简单写法
+    # # 控制程序退出，有这个就能检测Ctrl+C了
+    # """
+    # 多线程并不能接受到发送给主线程的Ctrl+C，而主线程结束子线程并不会解锁
+    # 所以将子线程设置为守护线程，这样主线程结束守护线程也会解锁
+    # 故为了让主线程可以被控制，就要加个while 循环等待接收信号
+    # （注释掉下面内容程序秒停）
+    # """
+    # # 可能是工程上的一般写法，要关注到子线程的存活
     # while True:
-    #     pass
+    #     alive = True
+    #     for thread in threads:
+    #         alive = alive and thread.is_alive()
+    #     if not alive:
+    #         break
+
+    # # 对该项目更简单写法
+    # # while True:
+    # #     pass
