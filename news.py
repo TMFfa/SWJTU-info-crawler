@@ -129,9 +129,29 @@ class News:
     def parse_text(self, res: requests.Response):
         return self.replace_url(res)
     
+    @staticmethod
     def add_copy(self, title, url) -> str:
-        "return copy button html code"
-        return ""
+        "因为一键复制按钮可能运行不了，故改为添加一个info信息自行复制"
+        # "return copy button html code"
+        # html = """
+        # <script type="text/javascript">
+        # function copy() {
+        #     var e = document.getElementById("copyActionByScript");
+        #     e.select(); // 选择对象
+        #     document.execCommand("Copy"); // 执行浏览器复制命令
+        # }
+        # </script>
+
+        # <textarea id="copyActionByScript">*info*</textarea>
+        # <input type="button" onclick="copy();" value="点击复制"></input>
+        # """
+        # info = f"{title}\n{url}\n{datetime.now()}"
+
+        # html = html.replace('*info*', info)
+
+        # return html
+        info = f"{title}<br>{url}<br>{datetime.now()}<br><br><br>"
+        return info
 
     def send(self, title, src):
         if '【ERROR】' in title:
@@ -143,10 +163,10 @@ class News:
         button_html = self.add_copy(title, res.url)
 
         if res.url.endswith('.pdf'):
-            self.send_mail(self.config, title, res.url+button_html)
+            self.send_mail(self.config, title, button_html+res.url)
         else:
             res.encoding = res.apparent_encoding
-            self.send_mail(self.config, title, self.parse_text(res)+button_html)
+            self.send_mail(self.config, title, button_html+self.parse_text(res))
 
     def __del__(self):
         self.conn.close()
@@ -200,48 +220,48 @@ if __name__ == '__main__':
     jwc_parser = lambda src: src.replace('../', 'http://jwc.swjtu.edu.cn/')
     jwc = JWC(conn, config, 'jwc', 'http://jwc.swjtu.edu.cn/vatuu/WebAction?setAction=newsList',
                '<h3><a href="(.*?)" target="_blank">(.*?)</a></h3>', parser=jwc_parser)
-    jwc.show_table()
-    jwc.loop()
+    # jwc.show_table()
+    # jwc.loop()
 
 
-    # xg_parser = lambda src: src.replace('/web/Home', 'http://xg.swjtu.edu.cn/web/Home')
-    # xg = XG(conn, config, 'xg', 'http://xg.swjtu.edu.cn/web/Home/PushNewsList?Lmk7LJw34Jmu=010j.shtml',
-    #           '<a href="(.*?)" title="(.*?)" target="_blank"', parser=xg_parser)
-    # # xg.show_table()
-    # # xg.loop()
+    xg_parser = lambda src: src.replace('/web/Home', 'http://xg.swjtu.edu.cn/web/Home')
+    xg = XG(conn, config, 'xg', 'http://xg.swjtu.edu.cn/web/Home/PushNewsList?Lmk7LJw34Jmu=010j.shtml',
+              '<a href="(.*?)" title="(.*?)" target="_blank"', parser=xg_parser)
+    # xg.show_table()
+    # xg.loop()
 
 
-    # pec_parser = lambda src: src.replace('../', 'https://pec.swjtu.edu.cn/')
-    # pec = PEC(conn, config, 'pec', 'https://pec.swjtu.edu.cn/yethan/WebAction?setAction=newsList&viewType=webdept_secondstyle&selectType=bigType&bigTypeId=75EDED8C6CAA7D73&newsType=all',
-    #            '<h3><a href="(.*?)" target="_blank">(.*?)</a></h3>', parser=pec_parser)
-    # # pec.show_table()
-    # # pec.loop()
+    pec_parser = lambda src: src.replace('../', 'https://pec.swjtu.edu.cn/')
+    pec = PEC(conn, config, 'pec', 'https://pec.swjtu.edu.cn/yethan/WebAction?setAction=newsList&viewType=webdept_secondstyle&selectType=bigType&bigTypeId=75EDED8C6CAA7D73&newsType=all',
+               '<h3><a href="(.*?)" target="_blank">(.*?)</a></h3>', parser=pec_parser)
+    # pec.show_table()
+    # pec.loop()
 
 
-    # jwc_t = threading.Thread(name='jwc', target=jwc.loop)
-    # xg_t = threading.Thread(name='xg', target=xg.loop)
-    # pec_t = threading.Thread(name='pec', target=pec.loop)
+    jwc_t = threading.Thread(name='jwc', target=jwc.loop)
+    xg_t = threading.Thread(name='xg', target=xg.loop)
+    pec_t = threading.Thread(name='pec', target=pec.loop)
 
-    # threads = [jwc_t, xg_t, pec_t]
-    # for thread in threads:
-    #     thread.daemon = True
-    #     thread.start()
+    threads = [jwc_t, xg_t, pec_t]
+    for thread in threads:
+        thread.daemon = True
+        thread.start()
     
-    # # 控制程序退出，有这个就能检测Ctrl+C了
-    # """
-    # 多线程并不能接受到发送给主线程的Ctrl+C，而主线程结束子线程并不会解锁
-    # 所以将子线程设置为守护线程，这样主线程结束守护线程也会解锁
-    # 故为了让主线程可以被控制，就要加个while 循环等待接收信号
-    # （注释掉下面内容程序秒停）
-    # """
-    # # 可能是工程上的一般写法，要关注到子线程的存活
-    # while True:
-    #     alive = True
-    #     for thread in threads:
-    #         alive = alive and thread.is_alive()
-    #     if not alive:
-    #         break
+    # 控制程序退出，有这个就能检测Ctrl+C了
+    """
+    多线程并不能接受到发送给主线程的Ctrl+C，而主线程结束子线程并不会解锁
+    所以将子线程设置为守护线程，这样主线程结束守护线程也会解锁
+    故为了让主线程可以被控制，就要加个while 循环等待接收信号
+    （注释掉下面内容程序秒停）
+    """
+    # 可能是工程上的一般写法，要关注到子线程的存活
+    while True:
+        alive = True
+        for thread in threads:
+            alive = alive and thread.is_alive()
+        if not alive:
+            break
 
-    # # 对该项目更简单写法
-    # # while True:
-    # #     pass
+    # 对该项目更简单写法
+    # while True:
+    #     pass
