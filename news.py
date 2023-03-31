@@ -11,22 +11,6 @@ from email.mime.text import MIMEText
 from config import *
 
 
-
-# 发送邮件
-def send_mail(config, subject, text):
-    # 构建邮件
-    msg = MIMEText(text, 'html', 'utf-8')
-    msg['From'] = config['from']
-    msg['To'] = ','.join(config['to'])
-    msg['Subject'] = subject
-
-    # 发送邮件
-    with smtplib.SMTP_SSL('smtp.qq.com', 465) as smtp:
-        smtp.login(config['from'], config['pwd'])
-        smtp.send_message(msg)
-        # smtp.sendmail(mail, to, msg.as_string())  # 一样的，但明显上面更简单
-
-
 class News:
     def __init__(self, conn: sqlite3.Connection, 
                  config: dict, table: str, news_url: str,
@@ -106,16 +90,43 @@ class News:
             finally:
                 time.sleep(60)
 
+    # 发送邮件
+    @staticmethod
+    def send_mail(config, subject, text):
+        # 构建邮件
+        msg = MIMEText(text, 'html', 'utf-8')
+        msg['From'] = config['from']
+        msg['To'] = ','.join(config['to'])
+        msg['Subject'] = subject
+
+        # 发送邮件
+        with smtplib.SMTP_SSL('smtp.qq.com', 465) as smtp:
+            smtp.login(config['from'], config['pwd'])
+            smtp.send_message(msg)
+            # smtp.sendmail(mail, to, msg.as_string())  # 一样的，但明显上面更简单
+    
+    def parse_text(self, text):
+        "to be rewrited"
+        return text
+    
+    def add_copy(self, title, url) -> str:
+        "return copy button html code"
+        return ""
+
     def send(self, title, src):
         if '【ERROR】' in title:
-            send_mail(self.config, title, src)
+            self.send_mail(self.config, title, src)
             return
         res = requests.get(src, headers=self.headers)
+
+        # add copy button
+        button_html = self.add_copy(title, res.url)
+
         if res.url.endswith('.pdf'):
-            send_mail(self.config, title, res.url)
+            self.send_mail(self.config, title, res.url+button_html)
         else:
             res.encoding = res.apparent_encoding
-            send_mail(self.config, title, res.text)
+            self.send_mail(self.config, title, self.parse_text(res.text)+button_html)
 
     def __del__(self):
         self.conn.close()
