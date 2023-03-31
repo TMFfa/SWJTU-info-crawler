@@ -183,7 +183,7 @@ class JWC(News):
     def parse_text(self, res: requests.Response):
         text = self.replace_url(res)
         try:
-            pass
+            return text
         except:
             return text
 
@@ -196,7 +196,7 @@ class XG(News):
     def parse_text(self, res: requests.Response):
         text = self.replace_url(res)
         try:
-            pass
+            return text
         except:
             return text
 
@@ -209,7 +209,7 @@ class PEC(News):
     def parse_text(self, res: requests.Response):
         text = self.replace_url(res)
         try:
-            pass
+            return text
         except:
             return text
 
