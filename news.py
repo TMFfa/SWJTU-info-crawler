@@ -259,6 +259,7 @@ if __name__ == '__main__':
         alive = True
         for thread in threads:
             alive = alive and thread.is_alive()
+        time.sleep(60)
         if not alive:
             break
 
