@@ -259,10 +259,11 @@ if __name__ == '__main__':
         alive = True
         for thread in threads:
             alive = alive and thread.is_alive()
-        time.sleep(60)
+        time.sleep(60)  # 加sleep以减少CPU消耗
         if not alive:
             break
 
-    # 对该项目更简单写法
+    # # 对该项目更简单写法
     # while True:
-    #     pass
+    #     # pass  # 不好，CPU占用更高
+    #     time.sleep(60)
