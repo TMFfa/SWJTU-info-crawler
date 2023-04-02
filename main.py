@@ -9,7 +9,7 @@ from config import *
 
 
 class User:
-    def __init__(self, username, passward, mail_config):
+    def __init__(self, username, password, mail_config):
         self.ss = self.login(username, password)
         self.mail_config = mail_config
         # self.score_formal = self.score_query_formal()
@@ -103,15 +103,32 @@ class User:
         li = re.findall('onclick="readMessage(\'(.*?)\')"', res.text)
         return li[:n]
 
+    # def mail_loop(self):
+    #     while True:
+    #         try:
+    #             try:
+    #                 num = self.email_check()
+    #             except IndexError as e:
+    #                 self.send('email check error', str(e))
+    #                 # print(e)
+    #                 break
+    #             if num:
+    #                 sids = self.mail_list(num)
+    #                 for sid in sids:
+    #                     text = self.get_mail(sid)
+    #                     self.send('教学邮箱', text)
+    #                 time.sleep(60)
+    #             else:
+    #                 time.sleep(60)
+    #         except Exception as e:
+    #             print(datetime.now(), end=': ')
+    #             print(e)
+    #             time.sleep(60)
     def mail_loop(self):
+        index_err_time = 0
         while True:
             try:
-                try:
-                    num = self.email_check()
-                except IndexError as e:
-                    self.send('email check error', str(e))
-                    # print(e)
-                    break
+                num = self.email_check()
                 if num:
                     sids = self.mail_list(num)
                     for sid in sids:
@@ -120,6 +137,15 @@ class User:
                     time.sleep(60)
                 else:
                     time.sleep(60)
+                if index_err_time > 0:
+                    index_err_time -= 1
+            except IndexError as indexErr:
+                self.send('email index error', str(indexErr))
+                index_err_time += 1
+                self.login(username, password)
+                if index_err_time > 3:
+                    self.send('Index Err more times, exit', '')
+                    sys.exit()
             except Exception as e:
                 print(datetime.now(), end=': ')
                 print(e)
