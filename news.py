@@ -150,7 +150,8 @@ class News:
         # html = html.replace('*info*', info)
 
         # return html
-        info = f"{title}<br>{url}<br>{datetime.now()}<br><br><br>"
+        # info = f"{title}<br>{url}<br>{datetime.now()}<br><br><br>"
+        info = f"{title}\n{url}\n{datetime.now()}"
         return info
 
     def send(self, title, src):
