@@ -163,10 +163,10 @@ class News:
         button_html = self.add_copy(title, res.url)
 
         if res.url.endswith('.pdf'):
-            self.send_mail(self.config, title, button_html+res.url)
+            self.send_mail(self.config, button_html, res.url)
         else:
             res.encoding = res.apparent_encoding
-            self.send_mail(self.config, title, button_html+self.parse_text(res))
+            self.send_mail(self.config, button_html, self.parse_text(res))
 
     def __del__(self):
         self.conn.close()
