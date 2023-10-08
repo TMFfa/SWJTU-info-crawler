@@ -29,3 +29,23 @@ config = {
 }
 ```
 注：如果不需要登录，则不需要`ddddocr`（验证码识别）
+
+### Dockerfile使用
+
+修改好`config.py`后，
+
+使用`docker build -t news-reminder .`来构建docker镜像，
+
+使用`docker run -d --restart=always news-reminder`运行
+
+​	-d表示后台运行
+
+​	--restart=always表示自动重启（开机、出错容器退出等情况）
+
+若要停止，运行`docker stop news-reminder`
+
+或`docker ps -a` 查看运行中的容器id，使用`docker stop ID前3位`来停止，
+
+再使用`docker rm ID前3位`删除容器（容器是镜像的实例，不会删除镜像）
+
+若要删除镜像，使用`docker images`查看镜像ID，`docker rmi ID前3位`删除镜像
