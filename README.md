@@ -49,3 +49,7 @@ config = {
 再使用`docker rm ID前3位`删除容器（容器是镜像的实例，不会删除镜像）
 
 若要删除镜像，使用`docker images`查看镜像ID，`docker rmi ID前3位`删除镜像
+
+## 使用微信发送通知————news-wechat.py
+使用微信必须先开启微信服务，详见项目：https://github.com/faf4r/cli-wechat
+开启微信后就可以使用微信接口发送消息，发送通知改为运行`news-wechat.py`
