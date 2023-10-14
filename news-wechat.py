@@ -1,5 +1,6 @@
-api = "http://127.0.0.1:3000/1?"  # https://github.com/chenbb0128/moyu-chat 用这个项目配置的微信通信接口
-group_name = "T174020"            # 使用群聊发送的群名
+api = "http://127.0.0.1:3000/1?"
+api = "http://127.0.0.1:3000/post/1"  //post接口
+group_name = "T174020"
 
 import os
 from urllib.parse import quote
@@ -8,7 +9,7 @@ endl = quote("\n")
 and_ = quote("&")
 space = quote(" ")
 
-def send(api, group_name, content=""):
+def send_by_curl(api, group_name, content=""):
     # requests会将中文转换成URL编码，导致原本内容改变，用curl和中文明文无问题，但是要替换一下非法字符
     # res = requests.get(
     #     url=api+f"name={group_name}&content={content}"
@@ -20,6 +21,18 @@ def send(api, group_name, content=""):
     url=api+f"name={group_name}&content={content}"
     cmd = f"curl '{url}'"
     os.system(cmd)
+
+def send(api, group_name, content=""):
+    data = {
+        'name': group_name,
+        'content': content
+    }
+    resp = requests.post(api, data=data)
+
+    resp =  resp.json()
+    if resp['success'] != 'true':
+        print(resp['msg'])
+
 
 
 import time
