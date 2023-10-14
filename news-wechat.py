@@ -1,5 +1,5 @@
 api = "http://127.0.0.1:3000/1?"
-api = "http://127.0.0.1:3000/post/1"  //post接口
+api = "http://127.0.0.1:3000/post/1"  #post接口
 group_name = "T174020"
 
 import os
