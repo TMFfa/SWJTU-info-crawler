@@ -36,7 +36,7 @@ config = {
 
 使用`docker build -t news-reminder .`来构建docker镜像，
 
-使用`docker run -d --restart=always -v /your/path/SWJTU-news-reminder/data:/app/data --name news news-reminder`运行
+使用`docker run -d --restart=always -v ~/your/path/SWJTU-news-reminder/data:/app/data --name news news-reminder`运行
 
 ​	-d表示后台运行
 
