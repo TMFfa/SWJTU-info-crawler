@@ -3,6 +3,7 @@ api = "http://127.0.0.1:3000/post/1"  #post接口
 group_name = "T174020"
 
 import os
+import sys
 from urllib.parse import quote
 
 endl = quote("\n")
@@ -32,6 +33,8 @@ def send(api, group_name, content=""):
     resp =  resp.json()
     if resp['success'] != 'true':
         print(resp['msg'])
+        return False  # 出现错误
+    return True
 
 
 
@@ -208,7 +211,7 @@ class News:
 
     def send2channel(self, title, src):
         if '【ERROR】' in title:
-            send_QQmail(title, src)
+            self.send_QQmail(title, src)
             return
         res = requests.get(src, headers=self.headers)
 
@@ -216,10 +219,13 @@ class News:
         button_html = self.add_copy(title, res.url)
 
         if res.url.endswith('.pdf'):
-            send(api, group_name, content=button_html)
+            success = send(api, group_name, content=button_html)
         else:
             res.encoding = res.apparent_encoding
-            send(api, group_name, content=button_html)
+            success = send(api, group_name, content=button_html)
+        if not success:
+            self.send_QQmail("【ERROR】is wechat server running?", button_html)
+            sys.exit()
 
     def __del__(self):
         self.conn.close()
