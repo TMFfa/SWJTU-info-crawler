@@ -36,15 +36,17 @@ config = {
 
 使用`docker build -t news-reminder .`来构建docker镜像，
 
-使用`docker run -d --restart=always -v ./data:/app/data news-reminder --name news`运行
+使用`docker run -d --restart=always -v /your/path/SWJTU-news-reminder/data:/app/data --name news news-reminder`运行
 
 ​	-d表示后台运行
 
 ​	--restart=always表示自动重启（开机、出错容器退出等情况）
 
-   -v 表示将本地路径映射到容器内路径，实现配置信息的替换
+   -v 表示将本地路径映射到容器内路径，实现配置信息的替换，注意**必须为绝对路径**，因为相对路径是相对于docker容器管理那边的路径的，且这里是不允许有`./`之类的(可以有~来表示家目录)
 
    --name 后面是用于管理容器的别名
+
+   镜像名一定要放最后
 
 若要停止，运行`docker stop news`
 
