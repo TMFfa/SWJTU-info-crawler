@@ -5,7 +5,7 @@ import time
 from datetime import datetime
 
 import utils
-from config import *
+from data.config import *
 
 
 class User:

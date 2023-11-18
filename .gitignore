@@ -1,7 +1,11 @@
 __pycache__/
+data/__pycache__/
 TODO.md
 
-news.db
+# 配置信息和数据库文件
+data/news.db
+
+
 demo.py
 demo.html
 tempCodeRunnerFile.py

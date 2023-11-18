@@ -9,8 +9,7 @@ from urllib import parse
 import smtplib
 from email.mime.text import MIMEText
 
-from config import *
-
+from data.config import *
 
 class News:
     def __init__(self, conn: sqlite3.Connection, 
@@ -216,7 +215,7 @@ class PEC(News):
 
 
 if __name__ == '__main__':
-    conn = sqlite3.connect('news.db', check_same_thread=False)
+    conn = sqlite3.connect('./data/news.db', check_same_thread=False)
 
     jwc_parser = lambda src: src.replace('../', 'http://jwc.swjtu.edu.cn/')
     jwc = JWC(conn, config, 'jwc', 'http://jwc.swjtu.edu.cn/vatuu/WebAction?setAction=newsList',

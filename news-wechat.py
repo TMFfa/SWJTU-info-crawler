@@ -49,7 +49,7 @@ from urllib import parse
 import smtplib
 from email.mime.text import MIMEText
 
-from config import config
+from data.config import config
 
 
 class News:
