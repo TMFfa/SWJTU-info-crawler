@@ -78,6 +78,9 @@ class News:
             self.init_news()
             self.show_table()
 
+    def __del__(self):
+        self.conn.close()
+
     def create_table(self, table):
         cursor = self.conn.cursor()
         cursor.execute(f'CREATE TABLE {table} (src TEXT, title TEXT)')

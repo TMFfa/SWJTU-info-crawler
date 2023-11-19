@@ -37,6 +37,9 @@ class News:
             self.create_table(self.table)
             self.init_news()
             self.show_table()
+    
+    def __del__(self):
+        self.conn.close()
 
     def create_table(self, table):
         cursor = self.conn.cursor()
