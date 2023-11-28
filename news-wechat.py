@@ -28,13 +28,13 @@ def send(api, group_name, content=""):
         'name': group_name,
         'content': content
     }
-    resp = requests.post(api, data=data)
+    try:
+        resp = requests.post(api, data=data)
 
-    resp =  resp.json()
-    if resp['success'] != 'true':
-        print(resp['msg'])
-        return False  # 出现错误
-    return True
+        resp =  resp.json()
+        return True
+    except:
+        return False
 
 
 
