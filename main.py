@@ -5,18 +5,18 @@ import time
 from datetime import datetime
 
 import utils
-from data.config import *
+from config import *
 
 
 class User:
     def __init__(self, username, password, mail_config):
         self.ss = self.login(username, password)
         self.mail_config = mail_config
-        # self.score_formal = self.score_query_formal()
-        # self.score_normal = self.score_query_normal()
-        # print(self.score_normal)
-        # print(self.score_formal)
-        # print('\n\n')
+        self.score_formal = self.score_query_formal()
+        self.score_normal = self.score_query_normal()
+        print(self.score_normal)
+        print(self.score_formal)
+        print('\n\n')
 
     @staticmethod
     def login(username, password) -> requests.Session:
@@ -157,5 +157,5 @@ class User:
 
 if __name__ == '__main__':
     user = User(username, password, config)
-    # user.run_score_query()
-    user.mail_loop()
+    user.run_score_query()
+    # user.mail_loop()
