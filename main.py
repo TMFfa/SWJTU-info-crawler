@@ -77,17 +77,11 @@ class User:
             time.sleep(60)
 
     def email_check(self):
-        url = 'http://jwc.swjtu.edu.cn/vatuu/WebMessageInfoAction'
-        data = {
-            'setAction': 'queryMyMessage',
-            'viewType': 'received',
-            'is_read': '0',
-            'keyword': ''
-        }
-        res = self.ss.post(url=url, data=data)
+        url = f'http://jwc.swjtu.edu.cn/vatuu/AjaxXML?selectType=UserMessageNum&ts={int(time.time()*100)}'
+        res = self.ss.get(url=url)
         res.encoding = res.apparent_encoding
         # print(res.text)
-        num = re.findall('共(\d+)条', res.text)[0]
+        num = re.findall('<messageNum>(\d+)</messageNum>', res.text)[0]
         return int(num)
 
     def get_mail(self, sid):
@@ -97,33 +91,16 @@ class User:
         return res.text.replace('..//', 'http://jwc.swjtu.edu.cn/')
 
     def mail_list(self, n):
-        url = 'http://jwc.swjtu.edu.cn/vatuu/WebMessageInfoAction?setAction=queryMyMessage&viewType=received'
-        res = self.ss.get(url=url)
+        url = 'http://jwc.swjtu.edu.cn/vatuu/WebMessageInfoAction'
+        data = {'setAction': 'queryMyMessage',
+                'viewType': 'received',
+                'is_read': 0,
+                'keyword': ''}
+        res = self.ss.post(url=url, data=data)
         res.encoding = res.apparent_encoding
         li = re.findall('onclick="readMessage(\'(.*?)\')"', res.text)
         return li[:n]
 
-    # def mail_loop(self):
-    #     while True:
-    #         try:
-    #             try:
-    #                 num = self.email_check()
-    #             except IndexError as e:
-    #                 self.send('email check error', str(e))
-    #                 # print(e)
-    #                 break
-    #             if num:
-    #                 sids = self.mail_list(num)
-    #                 for sid in sids:
-    #                     text = self.get_mail(sid)
-    #                     self.send('教学邮箱', text)
-    #                 time.sleep(60)
-    #             else:
-    #                 time.sleep(60)
-    #         except Exception as e:
-    #             print(datetime.now(), end=': ')
-    #             print(e)
-    #             time.sleep(60)
     def mail_loop(self):
         index_err_time = 0
         while True:
@@ -150,9 +127,6 @@ class User:
                 print(datetime.now(), end=': ')
                 print(e)
                 time.sleep(60)
-
-    def ocw_query(self):
-        pass
 
 
 if __name__ == '__main__':
