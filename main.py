@@ -98,8 +98,17 @@ class User:
                 'keyword': ''}
         res = self.ss.post(url=url, data=data)
         res.encoding = res.apparent_encoding
-        li = re.findall('onclick="readMessage(\'(.*?)\')"', res.text)
+        li = re.findall('onclick="readMessage\(\'(.*?)\'\)"', res.text)
         return li[:n]
+
+    def read_mail(self, sid):
+        # 邮件需要主动发送请求才能设置为已读
+        url = 'http://jwc.swjtu.edu.cn/vatuu/WebMessageInfoSetAction?setAction=setStatus&sid=' + sid
+        data = {
+            'setAction': 'setStatus',
+            'sid': sid
+        }
+        return self.ss.post(url=url, data=data).text
 
     def mail_loop(self):
         index_err_time = 0
@@ -109,8 +118,10 @@ class User:
                 if num:
                     sids = self.mail_list(num)
                     for sid in sids:
+                        print(f'【{datetime.now()}】 sid: {sid}')
                         text = self.get_mail(sid)
                         self.send('教学邮箱', text)
+                        self.read_mail(sid)
                     time.sleep(60)
                 else:
                     time.sleep(60)
@@ -131,5 +142,5 @@ class User:
 
 if __name__ == '__main__':
     user = User(username, password, config)
-    user.run_score_query()
-    # user.mail_loop()
+    # user.run_score_query()
+    user.mail_loop()
