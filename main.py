@@ -88,7 +88,12 @@ class User:
         url = f'http://jwc.swjtu.edu.cn/vatuu/WebMessageInfoAction?setAction=messageInfo&viewType=reply&sid={sid}'
         res = self.ss.get(url=url)
         res.encoding = res.apparent_encoding
-        return res.text.replace('..//', 'http://jwc.swjtu.edu.cn/')
+        html = res.text.replace('..//', 'http://jwc.swjtu.edu.cn/')
+        html = html.replace('<span class="c-blue">温馨提示</span>.', '')
+        html = html.replace('若使用单个工号或学号：（收件人输入框的值为精确查找值）输入完之后<span', '')
+        html = html.replace('class="c-blue">按Enter键查询</span>&nbsp;&nbsp;&nbsp;&nbsp;输入的值必须<span', '')
+        html = html.replace('class="c-red">完整且正确</span>否则查询不到输入的值对应的用户基本信息', '')
+        return html
 
     def mail_list(self, n):
         url = 'http://jwc.swjtu.edu.cn/vatuu/WebMessageInfoAction'
