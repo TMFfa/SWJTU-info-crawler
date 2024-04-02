@@ -135,10 +135,11 @@ class User:
             except IndexError as indexErr:
                 self.send('email index error', str(indexErr))
                 index_err_time += 1
-                self.login(username, password)
                 if index_err_time > 3:
                     self.send('Index Err more times, exit', '')
                     sys.exit()
+                print(f"【{datetime.now()}】 重新登陆...")
+                self.ss = self.login(username, password)
             except Exception as e:
                 print(datetime.now(), end=': ')
                 print(e)
