@@ -308,9 +308,9 @@ if __name__ == '__main__':
 
     jwc_t = threading.Thread(name='jwc', target=jwc.loop)
     xg_t = threading.Thread(name='xg', target=xg.loop)
-    pec_t = threading.Thread(name='pec', target=pec.loop)
+    # pec_t = threading.Thread(name='pec', target=pec.loop)
 
-    threads = [jwc_t, xg_t, pec_t]
+    threads = [jwc_t, xg_t]
     for thread in threads:
         thread.daemon = True
         thread.start()
