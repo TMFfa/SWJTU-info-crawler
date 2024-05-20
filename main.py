@@ -133,7 +133,7 @@ class User:
                 if index_err_time > 0:
                     index_err_time -= 1
             except IndexError as indexErr:
-                self.send('email index error', str(indexErr))
+                # self.send('email index error', str(indexErr))
                 index_err_time += 1
                 if index_err_time > 3:
                     self.send('Index Err more times, exit', '')
