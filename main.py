@@ -48,7 +48,7 @@ class User:
         while True:
             try:
                 formal = self.score_query_formal()
-                if '未登录' in self.score_normal:
+                if '未登录' in self.score_normal or "未登陆" in self.score_normal:
                     raise Exception('【登录过期】')
                 reg = re.compile('西南交通大学 教务处<br>(.*?)</td>')
                 if reg.sub('', self.score_formal) != reg.sub('', formal):
@@ -61,7 +61,7 @@ class User:
 
             try:
                 normal = self.score_query_normal()
-                if '未登录' in self.score_normal:
+                if "未登录" in self.score_normal or "未登陆" in self.score_normal:
                     raise Exception('【登录过期】')
                 if self.score_normal != normal:
                     self.send('平时成绩', normal)
@@ -71,7 +71,7 @@ class User:
                 # self.send('平时成绩查询报错', str(e))
                 print(f'\n【平时成绩查询报错 {datetime.now()}】\n', e)
 
-            if '未登录' in self.score_normal or '未登录' in self.score_formal:
+            if '未登录' in self.score_normal or '未登录' in self.score_formal or "未登陆" in self.score_formal or "未登陆" in self.score_normal:
                 # print('\n\n【登录过期】\n\n')
                 self.ss = self.login(username, password)
             time.sleep(60)
