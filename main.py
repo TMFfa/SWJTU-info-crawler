@@ -48,7 +48,7 @@ class User:
         while True:
             try:
                 formal = self.score_query_formal()
-                if '未登录' in self.score_normal or "未登陆" in self.score_normal:
+                if '未登录' in formal or "未登陆" in formal:
                     raise Exception('【登录过期】')
                 reg = re.compile('西南交通大学 教务处<br>(.*?)</td>')
                 if reg.sub('', self.score_formal) != reg.sub('', formal):
@@ -61,7 +61,7 @@ class User:
 
             try:
                 normal = self.score_query_normal()
-                if "未登录" in self.score_normal or "未登陆" in self.score_normal:
+                if "未登录" in normal or "未登陆" in normal:
                     raise Exception('【登录过期】')
                 if self.score_normal != normal:
                     self.send('平时成绩', normal)
