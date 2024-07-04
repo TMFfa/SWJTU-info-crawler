@@ -35,7 +35,7 @@ class User:
         utils.send(self.mail_config, subject, text)
 
     def score_query_formal(self):
-        res = self.ss.get('http://jwc.swjtu.edu.cn/vatuu/StudentScoreInfoAction?setAction=studentScoreQuery&viewType=printScoreAll')
+        res = self.ss.get("http://jwc.swjtu.edu.cn/vatuu/StudentScoreInfoAction?setAction=studentScoreQuery&viewType=studentScore&orderType=submitDate&orderValue=desc")
         res.encoding = res.apparent_encoding
         return res.text
 
@@ -49,12 +49,14 @@ class User:
             try:
                 formal = self.score_query_formal()
                 if '未登录' in formal or "未登陆" in formal:
-                    raise Exception('【登录过期】')
+                    raise ZeroDivisionError('【登录过期】')
                 reg = re.compile('西南交通大学 教务处<br>(.*?)</td>')
                 if reg.sub('', self.score_formal) != reg.sub('', formal):
                     self.send('全部成绩记录', formal)
                     print(f'{datetime.now()} send mail')
                     self.score_formal = formal
+            except ZeroDivisionError:
+                print("\n\n【登录过期】 {datetime.now()}】\n")
             except Exception as e:
                 # self.send('全部成绩查询报错', str(e))
                 print(f'\n【全部成绩查询报错 {datetime.now()}】\n', e)
@@ -67,6 +69,8 @@ class User:
                     self.send('平时成绩', normal)
                     print(f'{datetime.now()} send mail')
                     self.score_normal = normal
+            except ZeroDivisionError:
+                print("\n\n【登录过期】 {datetime.now()}】\n")
             except Exception as e:
                 # self.send('平时成绩查询报错', str(e))
                 print(f'\n【平时成绩查询报错 {datetime.now()}】\n', e)
