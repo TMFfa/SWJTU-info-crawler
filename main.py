@@ -49,6 +49,7 @@ class User:
             try:
                 formal = self.score_query_formal()
                 if '未登录' in formal or "未登陆" in formal:
+                    self.score_formal = formal
                     raise ZeroDivisionError('【登录过期】')
                 reg = re.compile('西南交通大学 教务处<br>(.*?)</td>')
                 if reg.sub('', self.score_formal) != reg.sub('', formal):
@@ -64,7 +65,8 @@ class User:
             try:
                 normal = self.score_query_normal()
                 if "未登录" in normal or "未登陆" in normal:
-                    raise Exception('【登录过期】')
+                    self.score_normal = normal
+                    raise ZeroDivisionError("【登录过期】")
                 if self.score_normal != normal:
                     self.send('平时成绩', normal)
                     print(f'{datetime.now()} send mail')
