@@ -28,7 +28,7 @@ class User:
                 print(f'【{datetime.now()}】')
                 print(msg)
             except Exception as e:
-                print(f'*******************\n意外报错： {datetime.now()}\n', e)
+                print(f'*******************\n意外报错： {datetime.now()}\n', repr(e))
                 sys.exit()
 
     def send(self, subject, text):
@@ -60,7 +60,7 @@ class User:
                 print("\n\n【登录过期】 {datetime.now()}】\n")
             except Exception as e:
                 # self.send('全部成绩查询报错', str(e))
-                print(f'\n【全部成绩查询报错 {datetime.now()}】\n', e)
+                print(f'\n【全部成绩查询报错 {datetime.now()}】\n', repr(e))
 
             try:
                 normal = self.score_query_normal()
@@ -75,7 +75,7 @@ class User:
                 print("\n\n【登录过期】 {datetime.now()}】\n")
             except Exception as e:
                 # self.send('平时成绩查询报错', str(e))
-                print(f'\n【平时成绩查询报错 {datetime.now()}】\n', e)
+                print(f'\n【平时成绩查询报错 {datetime.now()}】\n', repr(e))
 
             if '未登录' in self.score_normal or '未登录' in self.score_formal or "未登陆" in self.score_formal or "未登陆" in self.score_normal:
                 # print('\n\n【登录过期】\n\n')
@@ -148,7 +148,7 @@ class User:
                 self.ss = self.login(username, password)
             except Exception as e:
                 print(datetime.now(), end=': ')
-                print(e)
+                print(repr(e))
                 time.sleep(60)
 
 

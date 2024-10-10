@@ -5,6 +5,7 @@ import re
 import threading
 from datetime import datetime
 from urllib import parse
+import traceback
 
 import smtplib
 from email.mime.text import MIMEText
@@ -90,7 +91,7 @@ class News:
                 print(f'【{datetime.now()}】{str(e)}')
             except Exception as e:
                 # print(e)
-                self.send(f'【ERROR】{self.table}', str(e))
+                self.send(f'【ERROR】{self.table}', traceback.format_exc())
             finally:
                 time.sleep(60)
 
